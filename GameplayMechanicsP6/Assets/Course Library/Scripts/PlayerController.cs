@@ -15,6 +15,13 @@ public class PlayerController : MonoBehaviour
     public GameObject rocketPrefab;
     private GameObject tmpRocket;
     private Coroutine powerupCountdown;
+    public float hangTime;
+    public float smashSpeed;
+    public float explosionForce;
+    public float explsionRadius;
+
+    bool smashing = false;
+    float floorY;
 
     // Start is called before the first frame update
     void Start()
@@ -88,5 +95,28 @@ public class PlayerController : MonoBehaviour
         currentPowerUp = PowerUpType.None;
         powerupIndicator.gameObject.SetActive(false);
     }
+
+    IEnumerator Smash()
+    {
+        var enemies = FindObjectsOfType<Enemy>();
+
+        //Store the y position before taking off
+        floorY = transform.position.y;
+
+        // Calculate the amount of time we will go up
+        float jumpTime = Time.time + hangTime;
+
+        while (Time.time < jumpTime)
+        {
+            // move the player up while still keep their x velocity.
+            playerRb.velocity = new Vector2(playerRb.velocity.x, smashSpeed);
+            yield return null;
+        }
+
+        //Now move the player down
+        while(transform.position.y> floorY)
+        {
+            playerRb.velocity = new Vector2(playerRb.velocity.x - smashSpeed * 2);
+            yield
 } 
 

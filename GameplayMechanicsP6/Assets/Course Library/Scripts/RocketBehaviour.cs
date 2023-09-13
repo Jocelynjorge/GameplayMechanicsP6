@@ -11,7 +11,7 @@ public class RocketBehaviour : MonoBehaviour
     private float rocketStrength = 15.0f;
     private float aliveTimer = 5.0f;
     // Start is called before the first frame update
-    public void Fire(Transform newTarget)
+    public void Fire(Transform homingTarget)
     {
         target = homingTarget;
         homing = true;
