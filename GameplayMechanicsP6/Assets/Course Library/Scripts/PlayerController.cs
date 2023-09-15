@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     public float hangTime;
     public float smashSpeed;
     public float explosionForce;
-    public float explsionRadius;
+    public float explosionRadius;
 
     bool smashing = false;
     float floorY;
@@ -43,6 +43,12 @@ public class PlayerController : MonoBehaviour
         {
             LaunchRockets();
         }
+        if (currentPowerUp == PowerUpType.Smash && Input.GetKeyDown(KeyCode.Space) &&
+            !smashing)
+        {
+            smashing = true;
+            StartCoroutine(Smash());
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -64,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") && currentPowerUp==
+        if (collision.gameObject.CompareTag("Enemy") && currentPowerUp ==
             PowerUpType.Pushback)
         {
             Rigidbody enemyRigidbody = collision.gameObject.GetComponent<Rigidbody>();
@@ -114,9 +120,23 @@ public class PlayerController : MonoBehaviour
         }
 
         //Now move the player down
-        while(transform.position.y> floorY)
+        while (transform.position.y > floorY)
         {
-            playerRb.velocity = new Vector2(playerRb.velocity.x - smashSpeed * 2);
-            yield
-} 
+            playerRb.velocity = new Vector2 (playerRb.velocity.x ,- smashSpeed * 2);
+            yield return null;
+        }
+        //Cycle through all enemies 
+        for (int i = 0; i < enemies.Length; i++)
+        {
+
+            //Apply an explosion force that originates from our position.
+            if (enemies[i] != null)
+                enemies[i].GetComponent<Rigidbody>().AddExplosionForce(explosionForce,
+                    transform.position, explosionRadius, 0.0f, ForceMode.Impulse);
+        }
+
+        // We are no longer smashing, so set the boolean to false
+        smashing = false;
+    }
+}
 
